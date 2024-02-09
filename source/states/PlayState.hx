@@ -2264,12 +2264,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	public static var ignoreNoteOffset:Bool = false;
 	public function finishSong(/*?ignoreNoteOffset:Bool = false*/):Void
 	{
 		updateTime = false;
 		FlxG.sound.music.volume = 0;
-
-		var ignoreNoteOffset:Bool = false;
 
 		vocals.volume = 0;
 		vocals.pause();
@@ -2283,6 +2282,8 @@ class PlayState extends MusicBeatState
 				endCallback();
 			});
 		}
+
+		ignoreNoteOffset = false;
 	}
 
 

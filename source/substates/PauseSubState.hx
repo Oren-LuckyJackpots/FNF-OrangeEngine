@@ -287,7 +287,9 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 					PlayState.instance.notes.clear();
 					PlayState.instance.unspawnNotes = [];
-					PlayState.instance.finishSong(true);
+					PlayState.ignoreNoteOffset = true;
+					PlayState.instance.finishSong();
+					PlayState.ignoreNoteOffset = false;
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
