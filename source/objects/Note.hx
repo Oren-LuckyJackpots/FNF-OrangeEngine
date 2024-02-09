@@ -209,6 +209,9 @@ class Note extends FlxSprite
 	{
 		super();
 
+		if(ClientPrefs.data.disableNoteRGB) noteSplashData.useGlobalShader = true;
+		else if(!ClientPrefs.data.disableNoteRGB) noteSplashData.useGlobalShader = false;
+
 		animation = new PsychAnimationController(this);
 
 		antialiasing = ClientPrefs.data.antialiasing;
@@ -320,6 +323,8 @@ class Note extends FlxSprite
 	public var originalHeight:Float = 6;
 	public var correctionOffset:Float = 0; //dont mess with this
 	public function reloadNote(texture:String = '', postfix:String = '') {
+		if(ClientPrefs.data.disableNoteRGB) noteSplashData.useGlobalShader = true;
+		else if(!ClientPrefs.data.disableNoteRGB) noteSplashData.useGlobalShader = false;
 		if(texture == null) texture = '';
 		if(postfix == null) postfix = '';
 

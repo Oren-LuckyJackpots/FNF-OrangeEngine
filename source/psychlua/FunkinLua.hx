@@ -19,8 +19,11 @@ import flixel.addons.display.FlxRuntimeShader;
 import cutscenes.DialogueBoxPsych;
 
 import objects.StrumNote;
+import objects.StrumNoteLegacy;
 import objects.Note;
 import objects.NoteSplash;
+import objects.NoteLegacy;
+import objects.NoteSplashLegacy;
 import objects.Character;
 
 import states.MainMenuState;
@@ -191,13 +194,16 @@ class FunkinLua {
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
 
-		// Noteskin/Splash
-		set('noteSkin', ClientPrefs.data.noteSkin);
-		set('noteSkinPostfix', Note.getNoteSkinPostfix());
-		set('splashSkin', ClientPrefs.data.splashSkin);
-		set('splashSkinPostfix', NoteSplash.getSplashSkinPostfix());
-		set('splashAlpha', ClientPrefs.data.splashAlpha);
-
+		if (!ClientPrefs.data.legacyNoteSkin)
+		{
+			// Noteskin/Splash
+			set('noteSkin', ClientPrefs.data.noteSkin);
+			set('noteSkinPostfix', Note.getNoteSkinPostfix());
+			set('splashSkin', ClientPrefs.data.splashSkin);
+			set('splashSkinPostfix', NoteSplash.getSplashSkinPostfix());
+			set('splashAlpha', ClientPrefs.data.splashAlpha);
+		}
+		
 		// build target (windows, mac, linux, etc.)
 		set('buildTarget', LuaUtils.getBuildTarget());
 
@@ -587,63 +593,222 @@ class FunkinLua {
 			}
 		});
 
-		//Tween shit, but for strums
-		Lua_helper.add_callback(lua, "noteTweenX", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+		if (ClientPrefs.data.legacyNoteSkin == true)
+		{
+			// Tween shit, but for strums
+			Lua_helper.add_callback(lua, "noteTweenX", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
 
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {x: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
-		});
-		Lua_helper.add_callback(lua, "noteTweenY", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {x: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenY", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
 
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {y: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
-		});
-		Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {y: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
 
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
-		});
-		Lua_helper.add_callback(lua, "noteTweenDirection", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenDirection", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
 
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {direction: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
-		});
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {direction: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+				LuaUtils.cancelTween(tag);
+				if(note < 0) note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
+	
+				if(testicle != null) {
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween) {
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAlpha", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+				LuaUtils.cancelTween(tag);
+				if(note < 0) note = 0;
+				var testicle:StrumNoteLegacy = game.strumLineNotes.members[note % game.strumLineNotes.length];
+	
+				if(testicle != null) {
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {alpha: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween) {
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+		}
+		else if (ClientPrefs.data.legacyNoteSkin == false)
+		{
+			// Tween shit, but for strums
+			Lua_helper.add_callback(lua, "noteTweenX", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {x: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenY", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {y: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenDirection", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String)
+			{
+				LuaUtils.cancelTween(tag);
+				if (note < 0)
+					note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+
+				if (testicle != null)
+				{
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {direction: value}, duration, {
+						ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween)
+						{
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+				LuaUtils.cancelTween(tag);
+				if(note < 0) note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+	
+				if(testicle != null) {
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween) {
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+			Lua_helper.add_callback(lua, "noteTweenAlpha", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+				LuaUtils.cancelTween(tag);
+				if(note < 0) note = 0;
+				var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
+	
+				if(testicle != null) {
+					game.modchartTweens.set(tag, FlxTween.tween(testicle, {alpha: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
+						onComplete: function(twn:FlxTween) {
+							game.callOnLuas('onTweenCompleted', [tag]);
+							game.modchartTweens.remove(tag);
+						}
+					}));
+				}
+			});
+		}
 		Lua_helper.add_callback(lua, "mouseClicked", function(button:String) {
 			var click:Bool = FlxG.mouse.justPressed;
 			switch(button){
@@ -673,34 +838,6 @@ class FunkinLua {
 					released = FlxG.mouse.justReleasedRight;
 			}
 			return released;
-		});
-		Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
-
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
-		});
-		Lua_helper.add_callback(lua, "noteTweenAlpha", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
-			LuaUtils.cancelTween(tag);
-			if(note < 0) note = 0;
-			var testicle:StrumNote = game.strumLineNotes.members[note % game.strumLineNotes.length];
-
-			if(testicle != null) {
-				game.modchartTweens.set(tag, FlxTween.tween(testicle, {alpha: value}, duration, {ease: LuaUtils.getTweenEaseByString(ease),
-					onComplete: function(twn:FlxTween) {
-						game.callOnLuas('onTweenCompleted', [tag]);
-						game.modchartTweens.remove(tag);
-					}
-				}));
-			}
 		});
 
 		Lua_helper.add_callback(lua, "cancelTween", function(tag:String) {
