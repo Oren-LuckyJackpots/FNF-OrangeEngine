@@ -1,10 +1,12 @@
 package states;
 
+import openfl.Lib;
 import backend.WeekData;
 import backend.Highscore;
 
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.system.scaleModes.BaseScaleMode;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
@@ -67,6 +69,12 @@ class TitleState extends MusicBeatState
 	var titleJSON:TitleData;
 
 	public static var updateVersion:String = '';
+
+	var windowTwn:FlxTween;
+
+	var windowRes:FlxPoint;
+	var windowPos:FlxPoint;
+	var startTime:Float;
 
 	override public function create():Void
 	{
@@ -412,6 +420,28 @@ class TitleState extends MusicBeatState
 				// FlxG.sound.music.stop();
 
 				new FlxTimer().start(1, function(tmr:FlxTimer)
+					{FlxG.updateFramerate = 30; // Makes it smoother and consistant
+
+						windowRes = FlxPoint.get(Lib.application.window.width, Lib.application.window.height);
+						windowPos = CoolUtil.getCenterWindowPoint();
+						startTime = Sys.time();
+						
+						windowTwn = FlxTween.tween(windowRes, {x: 1280, y: 720}, 0.3 * 4, {ease: FlxEase.circInOut, onUpdate: (_) -> {
+							FlxG.resizeWindow(Std.int(windowRes.x), Std.int(windowRes.y));
+							CoolUtil.centerWindowOnPoint(windowPos);
+							if ((Sys.time() - startTime) > 1.35) {
+								windowTwn.cancel();
+								completeWindowTwn();
+							}
+						}, onComplete: function(twn:FlxTween)
+							{
+								completeWindowTwn();
+							}
+						});
+
+						FlxG.camera.visible = false;
+					});
+				new FlxTimer().start(1, function(tmr:FlxTimer)
 				{
 					if (mustUpdate) {
 						MusicBeatState.switchState(new OutdatedState());
@@ -487,6 +517,22 @@ class TitleState extends MusicBeatState
 
 		super.update(elapsed);
 	}
+
+	function completeWindowTwn(){
+		FlxG.updateFramerate = ClientPrefs.data.framerate;
+		BaseScaleMode.ogSize = FlxPoint.get(1280, 720); // fuck you haxeflixel
+
+		FlxG.scaleMode = new flixel.system.scaleModes.RatioScaleMode();
+
+		FlxG.resizeWindow(1280, 720);
+		FlxG.resizeGame(1280, 720);
+		CoolUtil.centerWindowOnPoint(windowPos);
+		
+		windowPos.put(); windowPos.put(); //baseCamPos.put();
+
+		FlxG.mouse.visible = true;
+		MusicBeatState.switchState(new MainMenuState());
+	};
 
 	function createCoolText(textArray:Array<String>, ?offset:Float = 0)
 	{

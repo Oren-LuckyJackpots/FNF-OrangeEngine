@@ -1,5 +1,6 @@
 package backend;
 
+import openfl.Lib;
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 
@@ -156,5 +157,17 @@ class CoolUtil
 			default:
 				text.borderStyle = NONE;
 		}
+	}
+	
+	public static inline function centerWindowOnPoint(?point:FlxPoint) {
+		Lib.application.window.x = Std.int(point.x - (Lib.application.window.width / 2));
+		Lib.application.window.y = Std.int(point.y - (Lib.application.window.height / 2));
+	}
+
+	public static inline function getCenterWindowPoint():FlxPoint {
+		return FlxPoint.get(
+			Lib.application.window.x + (Lib.application.window.width / 2),
+			Lib.application.window.y + (Lib.application.window.height / 2)
+		);
 	}
 }
