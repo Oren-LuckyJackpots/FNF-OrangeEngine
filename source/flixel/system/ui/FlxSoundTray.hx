@@ -87,7 +87,7 @@ class FlxSoundTray extends Sprite
 		text.gridFitType = GridFitType.PIXEL;
 		#else
 		#end
-		var dtf:TextFormat = new TextFormat(Assets.getFont(Paths.font("mariones.ttf")).fontName, 7, 0xFFa11b1b);
+		var dtf:TextFormat = new TextFormat(Assets.getFont(Paths.font("vcr.ttf")).fontName, 7, 0xffffffff);
 		dtf.align = TextFormatAlign.CENTER;
 		text.defaultTextFormat = dtf;
 		addChild(text);
